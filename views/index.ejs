@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobScraper - Easy Job Scraping for Anyone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #fafafc;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .hero-section {
+            background: #fafafc;
+            padding: 5rem 0 3rem 0;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+        
+        .btn-primary-cta {
+            background: #6c5ce7;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary-cta:hover {
+            background: #5a4bcf;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.3);
+        }
+        
+        .btn-outline-cta {
+            background: transparent;
+            color: #666;
+            padding: 15px 30px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-cta:hover {
+            background: #f8f9fa;
+            color: #333;
+            border-color: #ccc;
+        }
+        
+        .platform-ratings {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 4rem;
+            flex-wrap: wrap;
+        }
+        
+        .platform-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .platform-logo {
+            height: 24px;
+            width: auto;
+        }
+        
+        .stars {
+            color: #ffc107;
+        }
+        
+        .rating-score {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* How It Works Section */
+        .how-it-works {
+            background: #fafafc;
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .how-it-works-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .how-it-works-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+        
+        .how-it-works-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+        
+        .step-card {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6c5ce7, #5a4bcf);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem auto;
+        }
+        
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+        
+        .step-description {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        
+        .process-flow {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-top: 3rem;
+        }
+        
+        .process-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 2rem;
+        }
+        
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .process-step {
+            flex: 1;
+            text-align: center;
+            min-width: 150px;
+        }
+        
+        .process-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            color: #6c5ce7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem auto;
+        }
+        
+        .process-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .process-arrow {
+            color: #ccc;
+            font-size: 1.5rem;
+            margin: 0 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .process-steps {
+                flex-direction: column;
+            }
+            
+            .process-arrow {
+                transform: rotate(90deg);
+                margin: 1rem 0;
+            }
+            
+            .steps-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        .demo-section {
+            background: #fafafc;
+            padding: 4rem 0;
+            margin-top: 2rem;
+        }
+
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .demo-content {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-sidebar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            background: #2d3748;
+            border-radius: 16px 0 0 16px;
+        }
+        
+        .demo-main {
+            /* margin-left: 80px; */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .demo-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .demo-card h4 {
+            margin: 0 0 1rem 0;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .demo-button {
+            background: #6c5ce7;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .trust-section {
+            text-align: center;
+            padding: 4rem 0;
+            background: #fafafc;
+        }
+        
+        .trust-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .trust-subtitle {
+            color: #666;
+            margin-bottom: 3rem;
+        }
+        
+        .company-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+            opacity: 0.6;
+        }
+        
+        .company-logos img {
+            height: 40px;
+            width: auto;
+            filter: grayscale(100%);
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            background: #fafafc;
+            padding: 5rem 0;
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .faq-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .faq-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+        
+        .faq-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .faq-item {
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        
+        .faq-question {
+            background: transparent;
+            padding: 2rem 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 1.1rem;
+            border: none;
+            width: 100%;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-question:hover {
+            color: #333;
+        }
+        
+        .faq-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f0f0f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #666;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .faq-item.active .faq-icon {
+            background: #e5e7eb;
+            color: #333;
+        }
+        
+        .faq-answer {
+            padding: 0 0 2rem 0;
+            color: #666;
+            line-height: 1.7;
+            display: none;
+            font-size: 1rem;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Login Section at Bottom */
+        .bottom-login-section {
+            background: #fafafc;
+            color: #1a1a1a;
+            padding: 4rem 0;
+            text-align: center;
+            margin-top: 0;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .bottom-login-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        
+        .bottom-login-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .bottom-login-btn {
+            background: #6c5ce7;
+            color: white;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .bottom-login-btn:hover {
+            background: #5a4bcf;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .platform-ratings {
+                gap: 2rem;
+            }
+            
+            .demo-main {
+                grid-template-columns: 1fr;
+                margin-left: 20px;
+            }
+            
+            .company-logos {
+                gap: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Easy Job Scraping for Anyone</h1>
+            <p class="hero-subtitle">
+                JobScraper is your no-coding solution for job searching to turn multiple platforms 
+                into structured opportunities within clicks.
+            </p>
+            
+            <!-- CTA Buttons -->
+            <div class="cta-buttons">
+                <a href="/register" class="btn-primary-cta">Start a free trial</a>
+                <a href="#demo" class="btn-outline-cta">Watch a demo</a>
+            </div>
+            
+            <!-- Platform Ratings -->
+            <div class="platform-ratings">
+                <div class="platform-rating">
+                    <img src="/images/platforms/linkedin.png" alt="LinkedIn" class="platform-logo">
+                    <div class="stars">★★★★★</div>
+                    <span class="rating-score">4.8</span>
+                </div>
+                <div class="platform-rating">
+                    <img src="/images/platforms/indeed.png" alt="Indeed" class="platform-logo">
+                    <div class="stars">★★★★★</div>
+                    <span class="rating-score">4.7</span>
+                </div>
+                <div class="platform-rating">
+                    <img src="/images/platforms/naukri.svg" alt="Naukri" class="platform-logo">
+                    <div class="stars">★★★★★</div>
+                    <span class="rating-score">4.7</span>
+                </div>
+                <!-- <div class="platform-rating">
+                    <span style="font-weight: 600; color: #333;">JobScraper</span>
+                    <div class="stars">★★★★★</div>
+                    <span class="rating-score">4.7</span>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- How It Works Section -->
+    <div class="how-it-works">
+        <div class="how-it-works-container">
+            <h2 class="how-it-works-title">How JobScraper Works</h2>
+            <p class="how-it-works-subtitle">
+                Our intelligent platform automates your entire job search process, from discovery to application, 
+                saving you hours of manual work every day.
+            </p>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Set Your Preferences</h3>
+                    <p class="step-description">
+                        Create your profile with job preferences, skills, experience level, and desired locations. 
+                        Our AI learns what you're looking for.
+                    </p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Automated Scanning</h3>
+                    <p class="step-description">
+                        Our bots continuously scan LinkedIn, Indeed, Naukri, and other platforms 24/7, 
+                        finding new opportunities that match your criteria.
+                    </p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Smart Filtering</h3>
+                    <p class="step-description">
+                        AI-powered algorithms filter and rank jobs by relevance, removing duplicates 
+                        and presenting only the best matches in your dashboard.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- <div class="process-flow">
+                <h3 class="process-title">Real-time Job Discovery Process</h3>
+                <div class="process-steps">
+                    <div class="process-step">
+                        <div class="process-icon">🔍</div>
+                        <div class="process-label">Scan Platforms</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-icon">🤖</div>
+                        <div class="process-label">AI Analysis</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-icon">🎯</div>
+                        <div class="process-label">Match & Filter</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-icon">📩</div>
+                        <div class="process-label">Notify You</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-icon">✅</div>
+                        <div class="process-label">Apply Instantly</div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </div>
+    
+    <!-- Demo Section -->
+    <div class="demo-section" id="demo">
+        <div class="demo-container">
+            <div class="demo-content">
+                <!-- <div class="demo-sidebar"></div> -->
+                <div class="demo-main">
+                    <div class="demo-card">
+                        <h4>🔍 Smart Job Search</h4>
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">AI-powered search across multiple platforms</p>
+                        <button class="demo-button">Search</button>
+                        <button class="demo-button" style="background: #e0e0e0; color: #666; margin-left: 0.5rem;">Filter</button>
+                    </div>
+                    <div class="demo-card">
+                        <h4>🤖 Auto Applications</h4>
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Automated job applications with custom cover letters</p>
+                        <button class="demo-button">Apply</button>
+                    </div>
+                    <div class="demo-card">
+                        <h4>📊 Analytics Dashboard</h4>
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Track your job search performance</p>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                            <div style="background: #6c5ce7; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">24917</div>
+                            <span style="font-size: 0.8rem; color: #666;">jobs found</span>
+                        </div>
+                    </div>
+                    <div class="demo-card">
+                        <h4>⚡ Real-time Sync</h4>
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Live updates from all job platforms</p>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
+                            <span style="font-size: 0.8rem; color: #10b981;">Running</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Trust Section -->
+    <div class="trust-section">
+        <div class="container">
+            <h3 class="trust-title">Join millions of job seekers</h3>
+            <p class="trust-subtitle">who benefit from JobScraper every day!</p>
+            
+            <div class="company-logos">
+                <img src="/images/companies/flipkart.png" alt="Flipkart">
+                <img src="/images/companies/tcs.svg" alt="TCS">
+                <img src="/images/companies/google.png" alt="Google">
+                <img src="/images/companies/microsoft.svg" alt="Microsoft">
+                <img src="/images/companies/amazon.png" alt="Amazon">
+                <img src="/images/companies/infosys.svg" alt="Infosys">
+            </div>
+        </div>
+    </div>
+    
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <div class="faq-container">
+            <div class="faq-header">
+                <h2 class="faq-title">Frequently asked questions</h2>
+                <p class="faq-subtitle">
+                    Everything you need to know about job scraping and monitoring opportunities with JobScraper.
+                </p>
+            </div>
+            
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What is JobScraper and how does it work?</span>
+                        <div class="faq-icon">+</div>
+                    </button>
+                    <div class="faq-answer">
+                        <p>JobScraper is an intelligent job search automation platform that monitors multiple job boards including LinkedIn, Indeed, and Naukri.com. It uses AI-powered algorithms to find relevant job opportunities based on your profile and preferences, then organizes them in a unified dashboard for easy management.</p>
+                        <p>Simply set up your preferences once, and our system continuously searches for new opportunities that match your criteria across all major job platforms.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Do I need technical skills to use JobScraper's job search tools?</span>
+                        <div class="faq-icon">+</div>
+                    </button>
+                    <div class="faq-answer">
+                        <p>You need zero coding, technical skills, or development experience to use JobScraper.</p>
+                        <p>Simply create your profile, set your job preferences, and let our platform handle the rest. Our platform was designed with the vision that anyone can access comprehensive job search automation without technical expertise.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What kinds of job data can I collect with JobScraper?</span>
+                        <div class="faq-icon">+</div>
+                    </button>
+                    <div class="faq-answer">
+                        <p>JobScraper collects comprehensive job information including:</p>
+                        <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                            <li>Job titles and detailed descriptions</li>
+                            <li>Company information and culture details</li>
+                            <li>Salary ranges and compensation packages</li>
+                            <li>Required skills and experience levels</li>
+                            <li>Location and remote work options</li>
+                            <li>Application deadlines and posting dates</li>
+                            <li>Benefits and perks information</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How can I use the data I collect with JobScraper?</span>
+                        <div class="faq-icon">+</div>
+                    </button>
+                    <div class="faq-answer">
+                        <p>The job data collected through JobScraper can be used in multiple ways:</p>
+                        <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                            <li><strong>Direct Applications:</strong> Apply to jobs directly through our platform</li>
+                            <li><strong>Market Analysis:</strong> Understand salary trends and skill demands in your field</li>
+                            <li><strong>Strategic Planning:</strong> Plan your career moves based on market insights</li>
+                            <li><strong>Export Options:</strong> Download data as CSV or PDF for personal records</li>
+                            <li><strong>Automated Alerts:</strong> Get notified when new opportunities match your criteria</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Is my personal information and job search data secure?</span>
+                        <div class="faq-icon">+</div>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely. We take data security very seriously and implement industry-standard security measures:</p>
+                        <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                            <li>End-to-end encryption for all personal data</li>
+                            <li>Secure authentication and password protection</li>
+                            <li>Regular security audits and updates</li>
+                            <li>GDPR compliance for data protection</li>
+                            <li>No sharing of personal information with third parties</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What platforms does JobScraper support for job searching?</span>
+                        <div class="faq-icon">+</div>
+                    </button>
+                    <div class="faq-answer">
+                        <p>JobScraper currently supports major job platforms including:</p>
+                        <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                            <li><strong>LinkedIn:</strong> Professional networking and job opportunities</li>
+                            <li><strong>Indeed:</strong> Comprehensive job listings across industries</li>
+                            <li><strong>Naukri.com:</strong> Leading job portal for Indian market</li>
+                            <li><strong>More platforms:</strong> We're continuously adding support for additional job boards</li>
+                        </ul>
+                        <p>Our platform aggregates opportunities from these sources into a single, unified dashboard for efficient job search management.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Login Section -->
+    <div class="bottom-login-section">
+        <div class="container">
+            <h2 class="bottom-login-title">Already have an account?</h2>
+            <p class="bottom-login-subtitle">
+                Access your personalized dashboard and continue your automated job search journey
+            </p>
+            
+            <a href="/login" class="bottom-login-btn">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Login to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleFAQ(button) {
+            const faqItem = button.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+                const icon = item.querySelector('.faq-icon');
+                icon.textContent = '+';
+            });
+            
+            // If this item wasn't active, open it
+            if (!isActive) {
+                faqItem.classList.add('active');
+                const icon = button.querySelector('.faq-icon');
+                icon.textContent = '−';
+            }
+        }
+        
+        // Smooth scrolling for demo link
+        document.querySelector('a[href="#demo"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('demo').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

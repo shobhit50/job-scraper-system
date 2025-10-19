@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup - Job Scraper</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <!-- Modern Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="dashboard-title">Profile Setup</h1>
+                    <p class="dashboard-subtitle">Complete your profile to get better job recommendations</p>
+                </div>
+                <div class="d-flex gap-3">
+                    <a href="/dashboard" class="btn btn-light btn-lg">
+                        <i class="bi bi-house-fill me-2"></i>Dashboard
+                    </a>
+                    <a href="/logout" class="btn btn-outline-black btn-lg">
+                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                
+                <% if (typeof error !== 'undefined') { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
+                    </div>
+                <% } %>
+                
+                <% if (typeof success !== 'undefined') { %>
+                    <div class="alert alert-success" role="alert">
+                        <%= success %>
+                    </div>
+                <% } %>
+                
+                <!-- URL parameter messages -->
+                <script>
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const error = urlParams.get('error');
+                    const success = urlParams.get('success');
+                    
+                    if (error) {
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                        alertDiv.innerHTML = error + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+                        document.querySelector('.container .col-12').appendChild(alertDiv);
+                    }
+                    
+                    if (success) {
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                        alertDiv.innerHTML = success + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+                        document.querySelector('.container .col-12').appendChild(alertDiv);
+                    }
+                </script>
+
+                <!-- User Profile Details Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>User Profile Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/update-user?redirect=dashboard" method="POST">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="userName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="userName" name="name" 
+                                           value="<%= userDetails.name || '' %>" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="userPhone" class="form-label">Phone Number (Optional)</label>
+                                    <input type="tel" class="form-control" id="userPhone" name="phone" 
+                                           value="<%= userDetails.phone || '' %>" 
+                                           placeholder="e.g., +91 9876543210">
+                                </div>
+                            </div>
+                            
+                            <hr class="my-4">
+                            <h6 class="mb-3">Change Password (Optional)</h6>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="currentPassword" class="form-label">Current Password</label>
+                                    <input type="password" class="form-control" id="currentPassword" name="currentPassword" 
+                                           placeholder="Enter current password">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="newPassword" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="newPassword" name="newPassword" 
+                                           placeholder="Enter new password" minlength="6">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
+                                           placeholder="Confirm new password">
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-person-check me-2"></i>Update Profile Details
+                                </button>
+                                <a href="/dashboard" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Professional Profile Section -->
+                <form action="/profile?redirect=dashboard" method="POST">
+                    <!-- Academic Details -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Academic Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="degree" class="form-label">Degree</label>
+                                    <input type="text" class="form-control" id="degree" name="degree" 
+                                           value="<%= profile.education?.degree || '' %>" 
+                                           placeholder="e.g., Bachelor of Technology">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="field" class="form-label">Field of Study</label>
+                                    <input type="text" class="form-control" id="field" name="field" 
+                                           value="<%= profile.education?.field || '' %>" 
+                                           placeholder="e.g., Computer Science">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="university" class="form-label">University/College</label>
+                                    <input type="text" class="form-control" id="university" name="university" 
+                                           value="<%= profile.education?.university || '' %>" 
+                                           placeholder="e.g., Delhi University">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="graduationYear" class="form-label">Graduation Year</label>
+                                    <input type="number" class="form-control" id="graduationYear" name="graduationYear" 
+                                           value="<%= profile.education?.graduationYear || '' %>" 
+                                           placeholder="e.g., 2023" min="1950" max="2030">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Experience Details -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Experience Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="experienceLevel" class="form-label">Experience Level</label>
+                                    <select class="form-select" id="experienceLevel" name="experienceLevel">
+                                        <option value="fresher" <%= (profile.experience?.level === 'fresher') ? 'selected' : '' %>>Fresher</option>
+                                        <option value="0-1" <%= (profile.experience?.level === '0-1') ? 'selected' : '' %>>0-1 years</option>
+                                        <option value="1-3" <%= (profile.experience?.level === '1-3') ? 'selected' : '' %>>1-3 years</option>
+                                        <option value="3-5" <%= (profile.experience?.level === '3-5') ? 'selected' : '' %>>3-5 years</option>
+                                        <option value="5-10" <%= (profile.experience?.level === '5-10') ? 'selected' : '' %>>5-10 years</option>
+                                        <option value="10+" <%= (profile.experience?.level === '10+') ? 'selected' : '' %>>10+ years</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="currentRole" class="form-label">Current Role (if applicable)</label>
+                                    <input type="text" class="form-control" id="currentRole" name="currentRole" 
+                                           value="<%= profile.experience?.currentRole || '' %>" 
+                                           placeholder="e.g., Software Developer">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="currentCompany" class="form-label">Current Company (if applicable)</label>
+                                    <input type="text" class="form-control" id="currentCompany" name="currentCompany" 
+                                           value="<%= profile.experience?.currentCompany || '' %>" 
+                                           placeholder="e.g., Tech Solutions Ltd">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="location" class="form-label">Preferred Location</label>
+                                    <input type="text" class="form-control" id="location" name="location" 
+                                           value="<%= profile.location || '' %>" 
+                                           placeholder="e.g., Delhi, Mumbai, Bangalore">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Skills</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="skills" class="form-label">Skills (comma-separated)</label>
+                                <textarea class="form-control" id="skills" name="skills" rows="3" 
+                                          placeholder="e.g., JavaScript, Python, React, Node.js, MongoDB"><%= profile.skills ? profile.skills.join(', ') : '' %></textarea>
+                                <div class="form-text">Enter your skills separated by commas</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Platform Credentials -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Platform Credentials</h5>
+                            <small class="text-muted">Your credentials are encrypted and stored securely</small>
+                        </div>
+                        <div class="card-body">
+                            <!-- LinkedIn Credentials -->
+                            <h6 class="mb-3">LinkedIn</h6>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="linkedinEmail" class="form-label">LinkedIn Email</label>
+                                    <input type="email" class="form-control" id="linkedinEmail" name="linkedinEmail" 
+                                           placeholder="your-linkedin@email.com">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="linkedinPassword" class="form-label">LinkedIn Password</label>
+                                    <input type="password" class="form-control" id="linkedinPassword" name="linkedinPassword" 
+                                           placeholder="Your LinkedIn password">
+                                </div>
+                            </div>
+
+                            <!-- Naukri Credentials -->
+                            <h6 class="mb-3">Naukri.com</h6>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="naukriEmail" class="form-label">Naukri Email</label>
+                                    <input type="email" class="form-control" id="naukriEmail" name="naukriEmail" 
+                                           placeholder="your-naukri@email.com">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="naukriPassword" class="form-label">Naukri Password</label>
+                                    <input type="password" class="form-control" id="naukriPassword" name="naukriPassword" 
+                                           placeholder="Your Naukri password">
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <small>
+                                    <i class="bi bi-info-circle"></i>
+                                    Your credentials are encrypted before storing in the database. We use them only for job scraping on your behalf.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle me-2"></i>Save Professional Profile
+                        </button>
+                        <a href="/dashboard" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-x-circle me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Password validation
+        document.getElementById('newPassword').addEventListener('input', function() {
+            const newPassword = this.value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword && newPassword.length < 6) {
+                this.setCustomValidity('Password must be at least 6 characters long');
+            } else {
+                this.setCustomValidity('');
+            }
+            
+            validatePasswordMatch();
+        });
+        
+        document.getElementById('confirmPassword').addEventListener('input', validatePasswordMatch);
+        
+        function validatePasswordMatch() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const confirmField = document.getElementById('confirmPassword');
+            
+            if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+                confirmField.setCustomValidity('Passwords do not match');
+            } else {
+                confirmField.setCustomValidity('');
+            }
+        }
+        
+        // If password fields are filled, make current password required
+        document.querySelector('form[action="/update-user"]').addEventListener('submit', function(e) {
+            const newPassword = document.getElementById('newPassword').value;
+            const currentPassword = document.getElementById('currentPassword').value;
+            
+            if (newPassword && !currentPassword) {
+                e.preventDefault();
+                alert('Please enter your current password to change password');
+                document.getElementById('currentPassword').focus();
+            }
+        });
+    </script>
+</body>
+</html>
