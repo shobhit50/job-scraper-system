@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const scraperTasks = require('../tasks/scraperTasks');
+const axios = require('axios');
+
+// Base URL of the FastAPI task controller
+const TASKS_API_BASE = process.env.TASKS_API_BASE || 'http://127.0.0.1:8000';
 
 // Middleware to check if user is authenticated
 const requireAuth = (req, res, next) => {
@@ -13,70 +16,75 @@ const requireAuth = (req, res, next) => {
     next();
 };
 
-// GET /tasks/status - Get all task statuses
+// GET /tasks/status - Proxy to FastAPI tasks status
 router.get('/status', requireAuth, async (req, res) => {
     try {
-        const taskStatuses = scraperTasks.getTaskStatuses();
-        res.json({
-            success: true,
-            data: taskStatuses
-        });
+        const resp = await axios.get(`${TASKS_API_BASE}/tasks/status`);
+        // Forward the FastAPI response body
+        return res.json(resp.data);
     } catch (error) {
-        res.status(500).json({
+        console.error('Error fetching tasks status:', error.message);
+        return res.status(502).json({
             success: false,
-            message: 'Failed to get task statuses',
+            message: 'Failed to fetch tasks status from task controller',
             error: error.message
         });
     }
 });
 
-// POST /tasks/start/:taskName - Start a specific task
+// POST /tasks/start/:taskName - Start a specific task (proxy to FastAPI)
 router.post('/start/:taskName', requireAuth, async (req, res) => {
     try {
         const { taskName } = req.params;
-        const result = scraperTasks.startTask(taskName);
-        
-        if (result) {
-            res.json({
-                success: true,
-                message: `Task ${taskName} started successfully`
-            });
-        } else {
-            res.status(404).json({
-                success: false,
-                message: `Task ${taskName} not found`
-            });
-        }
+        // Call FastAPI task start endpoint
+        const resp = await axios.post(`${TASKS_API_BASE}/tasks/start/${encodeURIComponent(taskName)}`);
+        // Expected FastAPI response examples:
+        // { message: 'started', task: 'scrape_linkedin' }
+        // { message: 'alredy_started', task: 'scrape_linkedin' }
+        return res.status(resp.status).json(resp.data);
     } catch (error) {
-        res.status(500).json({
+        // If FastAPI returns a non-2xx, axios throws - handle that
+        if (error.response) {
+            return res.status(error.response.status).json(error.response.data);
+        }
+        console.error('Failed to start task via task controller:', error.message);
+        return res.status(502).json({
             success: false,
-            message: 'Failed to start task',
+            message: 'Failed to start task via task controller',
             error: error.message
         });
     }
 });
 
-// POST /tasks/stop/:taskName - Stop a specific task
-router.post('/stop/:taskName', requireAuth, async (req, res) => {
+// POST /tasks/stop - Stop a specific task (proxy to FastAPI)
+// Accepts either ?name=scrape_linkedin or ?platform=linkedin
+router.post('/stop', requireAuth, async (req, res) => {
     try {
-        const { taskName } = req.params;
-        const result = scraperTasks.stopTask(taskName);
-        
-        if (result) {
-            res.json({
-                success: true,
-                message: `Task ${taskName} stopped successfully`
-            });
-        } else {
-            res.status(404).json({
+        let { name, platform } = req.query;
+        if (!name && platform) {
+            name = `scrape_${platform}`;
+        }
+
+        if (!name) {
+            return res.status(400).json({
                 success: false,
-                message: `Task ${taskName} not found`
+                message: 'Query parameter "name" or "platform" is required to stop a task'
             });
         }
+
+        const resp = await axios.post(`${TASKS_API_BASE}/tasks/stop`, null, {
+            params: { name }
+        });
+
+        return res.status(resp.status).json(resp.data);
     } catch (error) {
-        res.status(500).json({
+        if (error.response) {
+            return res.status(error.response.status).json(error.response.data);
+        }
+        console.error('Failed to stop task via task controller:', error.message);
+        return res.status(502).json({
             success: false,
-            message: 'Failed to stop task',
+            message: 'Failed to stop task via task controller',
             error: error.message
         });
     }

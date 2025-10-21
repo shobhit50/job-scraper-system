@@ -15,16 +15,39 @@ class ScraperService {
         // Scraper endpoints (these would be actual scraper services in production)
         this.scraperEndpoints = {
             linkedin: 'http://localhost:3001/scrape',
-            naukri: 'http://localhost:3002/scrape',
-            indeed: 'http://localhost:3003/scrape'
+            // naukri: 'http://localhost:3002/scrape',
+            // indeed: 'http://localhost:3003/scrape'
         };
     }
 
-    // Get current scraper status
-    getStatus() {
+    async init() {
+        try {
+            const response = await fetch('http://localhost:3001/tasks/status', {
+                method: 'GET',
+                headers: {
+                    'accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            const isRunning = data.count >= 1 && data.running.length > 0;
+
+            this.scraperStatus.isRunning = isRunning;
+            this.scraperStatus.status = isRunning ? 'running' : 'stopped';
+        } catch (error) {
+            this.scraperStatus.error = error.message;
+        }
+    }
+
+    async getStatus() {
         return {
             ...this.scraperStatus,
-            uptime: this.scraperStatus.lastRun ? 
+            uptime: this.scraperStatus.lastRun ?
                 new Date().getTime() - new Date(this.scraperStatus.lastRun).getTime() : 0
         };
     }
@@ -54,8 +77,8 @@ class ScraperService {
 
             console.log(`Starting ${platform} scraper...`);
 
-            // Simulate scraper API call (in production, this would call actual scraper services)
-            const result = await this.callScraperAPI(platform, userCredentials);
+                // Call task controller to start the scraper task (FastAPI)
+                const result = await this.callScraperAPI(platform, userCredentials);
 
             // Update status on success
             this.scraperStatus = {
@@ -98,82 +121,92 @@ class ScraperService {
 
     // Simulate calling external scraper API
     async callScraperAPI(platform, credentials) {
-        // In production, this would make actual HTTP calls to scraper services
-        // For now, we'll simulate the process
-        
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                // Simulate random success/failure
-                const success = Math.random() > 0.2; // 80% success rate
-                
-                if (success) {
-                    const jobsScraped = Math.floor(Math.random() * 50) + 10; // 10-60 jobs
-                    resolve({
-                        jobsScraped,
-                        jobs: this.generateMockJobs(jobsScraped, platform)
-                    });
-                } else {
-                    reject(new Error(`Failed to connect to ${platform} scraper service`));
-                }
-            }, 3000); // 3 second delay to simulate scraping
-        });
-        
-        /* 
-        // In production, this would be:
+        // Use TASKS API controller to start and monitor scraping task
+        const TASKS_API_BASE = process.env.TASKS_API_BASE || 'http://127.0.0.1:8000';
+
         try {
-            const response = await axios.post(this.scraperEndpoints[platform], {
-                credentials,
-                searchCriteria: {
-                    keywords: ['developer', 'engineer', 'programmer'],
-                    location: 'India',
-                    experience: '1-5'
+            // Start task: e.g. POST /tasks/start/linkedin
+            const startResp = await axios.post(`${TASKS_API_BASE}/tasks/start/${encodeURIComponent(platform)}`);
+            // startResp.data expected: { message: 'started'|'alredy_started', task: 'scrape_linkedin' }
+            const startData = startResp.data || {};
+
+            // If task already started, return quick response
+            if (startData.message === 'alredy_started') {
+                return { jobsScraped: 0, jobs: [], note: 'already_started' };
+            }
+
+            // If started, poll /tasks/status until task is no longer running or timeout
+            const timeoutMs = 5 * 60 * 1000; // 5 minutes
+            const pollInterval = 3000; // 3 seconds
+            const startTime = Date.now();
+
+            while (Date.now() - startTime < timeoutMs) {
+                // GET /tasks/status
+                try {
+                    const statusResp = await axios.get(`${TASKS_API_BASE}/tasks/status`);
+                    const statusData = statusResp.data || {};
+                    const running = statusData.running || [];
+
+                    // If task is no longer in running list, assume completed
+                    if (!running.includes(startData.task)) {
+                        // In a real system, we'd fetch results; here we return placeholder
+                        return { jobsScraped: 0, jobs: [], note: 'completed' };
+                    }
+                } catch (pollErr) {
+                    console.warn('Warning polling tasks status:', pollErr.message);
                 }
-            }, {
-                timeout: 30000 // 30 second timeout
-            });
-            
-            return response.data;
+
+                // wait
+                await new Promise(r => setTimeout(r, pollInterval));
+            }
+
+            // Timeout reached
+            throw new Error('Task did not complete within timeout');
+
         } catch (error) {
-            throw new Error(`Scraper API error: ${error.message}`);
+            if (error.response && error.response.data) {
+                throw new Error(`Task controller error: ${error.response.data.detail || error.response.data.message || JSON.stringify(error.response.data)}`);
+            }
+            throw new Error(error.message);
         }
-        */
+        
     }
 
     // Generate mock jobs for testing
-    generateMockJobs(count, platform) {
-        const jobs = [];
-        const titles = ['Software Developer', 'Full Stack Developer', 'Backend Developer', 
-                       'Frontend Developer', 'DevOps Engineer', 'Data Scientist'];
-        const companies = ['TechCorp', 'InnovateLabs', 'StartupXYZ', 'MegaTech', 'CodeFactory'];
-        const locations = ['Bangalore', 'Mumbai', 'Delhi', 'Pune', 'Hyderabad', 'Chennai'];
-        const salaries = ['5-8 LPA', '8-12 LPA', '12-18 LPA', '18-25 LPA', 'Not disclosed'];
+    // generateMockJobs(count, platform) {
+    //     const jobs = [];
+    //     const titles = ['Software Developer', 'Full Stack Developer', 'Backend Developer', 
+    //                    'Frontend Developer', 'DevOps Engineer', 'Data Scientist'];
+    //     const companies = ['TechCorp', 'InnovateLabs', 'StartupXYZ', 'MegaTech', 'CodeFactory'];
+    //     const locations = ['Bangalore', 'Mumbai', 'Delhi', 'Pune', 'Hyderabad', 'Chennai'];
+    //     const salaries = ['5-8 LPA', '8-12 LPA', '12-18 LPA', '18-25 LPA', 'Not disclosed'];
         
-        for (let i = 0; i < count; i++) {
-            const jobId = Date.now() + i;
-            jobs.push({
-                title: titles[Math.floor(Math.random() * titles.length)],
-                company: companies[Math.floor(Math.random() * companies.length)],
-                location: locations[Math.floor(Math.random() * locations.length)],
-                experience: `${Math.floor(Math.random() * 5) + 1}-${Math.floor(Math.random() * 3) + 3} years`,
-                description: `Looking for skilled developer with expertise in modern technologies and ${platform} experience.`,
-                url: `https://${platform}.com/job/${jobId}`,
-                source: platform,
-                platform_job_id: jobId.toString(),
-                salary: salaries[Math.floor(Math.random() * salaries.length)],
-                employment_type: 'full-time',
-                skills: this.extractRandomSkills(),
-                posted_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000), // Random date within last 30 days
-                scraped_at: new Date(),
-                status: 'active',
-                extra_data: {
-                    mock_data: true,
-                    generated_at: new Date().toISOString()
-                }
-            });
-        }
+    //     for (let i = 0; i < count; i++) {
+    //         const jobId = Date.now() + i;
+    //         jobs.push({
+    //             title: titles[Math.floor(Math.random() * titles.length)],
+    //             company: companies[Math.floor(Math.random() * companies.length)],
+    //             location: locations[Math.floor(Math.random() * locations.length)],
+    //             experience: `${Math.floor(Math.random() * 5) + 1}-${Math.floor(Math.random() * 3) + 3} years`,
+    //             description: `Looking for skilled developer with expertise in modern technologies and ${platform} experience.`,
+    //             url: `https://${platform}.com/job/${jobId}`,
+    //             source: platform,
+    //             platform_job_id: jobId.toString(),
+    //             salary: salaries[Math.floor(Math.random() * salaries.length)],
+    //             employment_type: 'full-time',
+    //             skills: this.extractRandomSkills(),
+    //             posted_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000), // Random date within last 30 days
+    //             scraped_at: new Date(),
+    //             status: 'active',
+    //             extra_data: {
+    //                 mock_data: true,
+    //                 generated_at: new Date().toISOString()
+    //             }
+    //         });
+    //     }
         
-        return jobs;
-    }
+        // return jobs;
+    // }
 
     // Extract random skills for mock data
     extractRandomSkills() {

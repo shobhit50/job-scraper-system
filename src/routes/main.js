@@ -36,20 +36,21 @@ router.get('/dashboard', requireAuth, async (req, res) => {
                 
                 // Transform jobs to match the expected frontend format
                 jobs = jobs.map(job => ({
-                    id: job._id,
-                    jobTitle: job.title,
-                    companyName: job.company,
-                    location: job.location,
-                    experience: job.experience,
-                    profileDescription: job.description,
-                    platform: job.source,
-                    url: job.url,
-                    scrapedAt: job.scraped_at,
-                    salary: job.salary,
-                    skills: job.skills,
-                    employment_type: job.employment_type,
-                    timeAgo: job.timeAgo
-                }));
+                                id: job._id?.toString() || "",
+                                jobTitle: job.title || "",
+                                companyName: job.company || "",
+                                location: job.location || "",
+                                experience: job.experience || "",
+                                profileDescription: job.description || "",
+                                platform: job.source || "",
+                                url: job.url || "",
+                                scrapedAt: job.scraped_at || "",
+                                salary: job.salary || "",
+                                skills: Array.isArray(job.skills) ? job.skills : [],
+                                employment_type: job.employment_type || "",
+                                timeAgo: job.timeAgo || ""
+                            }));
+
                 
             } catch (error) {
                 console.error('Error loading jobs from MongoDB:', error);
@@ -57,6 +58,7 @@ router.get('/dashboard', requireAuth, async (req, res) => {
                 jobs = [];
             }
         }
+        console.log('loaded jobs count:', jobs.length);
         const justLoggedIn =  req.session.justLoggedIn || req.query.from === 'login';
         console.log('User just logged in:', justLoggedIn);
         res.render('dashboard', { 

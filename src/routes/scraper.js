@@ -18,6 +18,8 @@ const requireAuth = (req, res, next) => {
 router.get('/status', requireAuth, async (req, res) => {
     try {
         const status = scraperService.getStatus();
+        console.log('Scraper status requested:', status);
+        
         res.json({
             success: true,
             data: status
